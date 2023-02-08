@@ -14,7 +14,9 @@ internal static class Utility
 	/// <summary>Fisher-Yates shuffle</summary>
 	public static IList<T> Shuffle<T>(this IList<T> list)
 	{
+#pragma warning disable CS8603 // Possible null reference return.
 		if (list is null) return list;
+#pragma warning restore CS8603 // Possible null reference return.
 		int n = list.Count;
 		while (n > 1)
 		{
