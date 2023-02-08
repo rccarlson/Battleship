@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace Battleship
 {
+	public enum PointState
+	{
+		Unknown,
+		Miss,
+		Hit
+	}
+
 	public class Board
 	{
 		public Board(RuleSet rules)
@@ -48,7 +55,7 @@ namespace Battleship
 		public readonly RuleSet Rules;
 		public readonly List<Ship> Ships;
 		private readonly HashSet<ReadOnlyPoint> OccupiedPoints;
-		private readonly List<ReadOnlyPoint> ShotsTaken = new();
+		public readonly List<ReadOnlyPoint> ShotsTaken = new();
 
 		public bool IsWon => !OccupiedPoints.Except(ShotsTaken).Any();
 
@@ -62,20 +69,30 @@ namespace Battleship
 			return OccupiedPoints.Contains(point);
 		}
 
+		public PointState GetPointState(int x, int y)
+		{
+			var point = new ReadOnlyPoint(x, y);
+			if (!ShotsTaken.Contains(point)) return PointState.Unknown;
+			else if (OccupiedPoints.Contains(point)) return PointState.Hit;
+			else return PointState.Miss;
+		}
+
 		public override string ToString() => ToString(false);
 		public string ToString(bool reveal)
 		{
 			StringBuilder sb = new();
-			for(int y=0;y<Rules.BoardHeight;y++)
+			for (int y = 0; y < Rules.BoardHeight; y++)
 			{
-				for(int x=0;x<Rules.BoardWidth;x++)
+				for (int x = 0; x < Rules.BoardWidth; x++)
 				{
-					var firedAt = ShotsTaken.Any(shot => shot.X == x && shot.Y == y);
-					var occupied = OccupiedPoints.Any(shot => shot.X == x && shot.Y == y);
-					char outputChar;
-					if (!firedAt && !reveal) outputChar = '~';
-					else if (occupied) outputChar = 'H';
-					else outputChar = ' ';
+					var state = GetPointState(x, y);
+					char outputChar = state switch
+					{
+						PointState.Unknown => '~',
+						PointState.Hit => 'H',
+						PointState.Miss => ' ',
+						_ => throw new NotImplementedException(),
+					};
 					sb.Append(outputChar);
 				}
 				sb.AppendLine("|");
