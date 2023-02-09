@@ -5,99 +5,102 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Battleship
+namespace Battleship;
+
+public enum PointState
 {
-	public enum PointState
+	Unknown,
+	Miss,
+	Hit
+}
+
+public class Board
+{
+	public Board(RuleSet rules)
 	{
-		Unknown,
-		Miss,
-		Hit
+		Rules = rules;
+		Ships = new List<Ship>(rules.Ships.Length);
+		foreach (var (shipName, length) in rules.Ships)
+		{
+			var placement = GetAllPossiblePlacements(length, rules, Ships).ToArray().Shuffle().First();
+			Ships.Add(new Ship(shipName, placement));
+		}
+		OccupiedPoints = Ships.SelectMany(ship => ship.Placement.OccupiedSpaces).ToHashSet();
 	}
 
-	public class Board
+	private static Dictionary<string, BoardPlacement[]> BoardPlacementHash = new();
+	private static IEnumerable<BoardPlacement> GetAllPossiblePlacements(int length, RuleSet rules, IEnumerable<Ship> ships)
 	{
-		public Board(RuleSet rules)
+		length -= 1;
+		var inputHash = $"{length}|{rules.GetHashCode()}";
+		if (!BoardPlacementHash.TryGetValue(inputHash, out BoardPlacement[]? placement))
 		{
-			Rules = rules;
-			Ships = new(rules.Ships.Length);
-			var points = GetAllPossiblePlacements(5).ToArray();
-			foreach (var (shipName, length) in rules.Ships)
-			{
-				var placement = GetAllPossiblePlacements(length).ToArray().Shuffle().First();
-				Ships.Add(new Ship(shipName, placement));
-			}
-			OccupiedPoints = Ships.SelectMany(ship => ship.Placement.OccupiedSpaces).ToHashSet();
-		}
-		private IEnumerable<BoardPlacement> GetAllPossiblePlacements(int length)
-		{
-			length -= 1;
-			var verticalPositions = GeneratePoints(0, Rules.BoardWidth, 0, Rules.BoardHeight - length)
+			var verticalPositions = GeneratePoints(0, rules.BoardWidth, 0, rules.BoardHeight - length)
 				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X, start.Y + length)));
-			var horizontalPositions = GeneratePoints(0, Rules.BoardWidth - length, 0, Rules.BoardHeight)
+			var horizontalPositions = GeneratePoints(0, rules.BoardWidth - length, 0, rules.BoardHeight)
 				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X + length, start.Y)));
+			placement = verticalPositions.Concat(horizontalPositions).ToArray();
+			BoardPlacementHash[inputHash] = placement;
+		}
 
-			return verticalPositions.Concat(horizontalPositions)
-				.Where(PlacementIsValid);
+		return placement.Where(PlacementIsValid);
 
-			IEnumerable<ReadOnlyPoint> GeneratePoints(int xmin, int xmax, int ymin, int ymax)
-				=> Enumerable.Range(xmin, xmax).SelectMany(x => Enumerable.Range(ymin, ymax).Select(y => new ReadOnlyPoint(x, y)));
+		IEnumerable<ReadOnlyPoint> GeneratePoints(int xmin, int xmax, int ymin, int ymax)
+			=> Enumerable.Range(xmin, xmax).SelectMany(x => Enumerable.Range(ymin, ymax).Select(y => new ReadOnlyPoint(x, y)));
 
-			bool PlacementIsValid(BoardPlacement placement)
+		bool PlacementIsValid(BoardPlacement placement)
+		{
+			if (ships is null) return true;
+			var allOccupied = ships.SelectMany(ship => ship.Placement.OccupiedSpaces);
+			var allProposed = placement.OccupiedSpaces;
+			var conflict = allProposed.Where(proposed => allOccupied.Any(occupied => occupied == proposed)).Any();
+			return !conflict;
+		}
+	}
+
+	public readonly RuleSet Rules;
+	public readonly List<Ship> Ships;
+	private readonly HashSet<ReadOnlyPoint> OccupiedPoints;
+	public readonly List<ReadOnlyPoint> ShotsTaken = new();
+
+	public bool IsWon => !OccupiedPoints.Except(ShotsTaken).Any();
+
+	public void Shoot(int x, int y)
+	{
+		var point = new ReadOnlyPoint(x, y);
+		ShotsTaken.Add(point);
+	}
+
+	public PointState GetPointState(int x, int y)
+	{
+		var point = new ReadOnlyPoint(x, y);
+		if (!ShotsTaken.Contains(point)) return PointState.Unknown;
+		else if (OccupiedPoints.Contains(point)) return PointState.Hit;
+		else return PointState.Miss;
+	}
+
+	public override string ToString() => ToString(false);
+	public string ToString(bool reveal)
+	{
+		StringBuilder sb = new();
+		for (int y = 0; y < Rules.BoardHeight; y++)
+		{
+			for (int x = 0; x < Rules.BoardWidth; x++)
 			{
-				if (Ships is null) return true;
-				var allOccupied = Ships.SelectMany(ship => ship.Placement.OccupiedSpaces);
-				var allProposed = placement.OccupiedSpaces;
-				var conflict = allProposed.Where(proposed => allOccupied.Any(occupied => occupied == proposed)).Any();
-				return !conflict;
-			}
-		}
-
-		public readonly RuleSet Rules;
-		public readonly List<Ship> Ships;
-		private readonly HashSet<ReadOnlyPoint> OccupiedPoints;
-		public readonly List<ReadOnlyPoint> ShotsTaken = new();
-
-		public bool IsWon => !OccupiedPoints.Except(ShotsTaken).Any();
-
-		/// <summary>
-		/// <see langword="true"/> if the shot is a hit. <see langword="false"/> otherwise.
-		/// </summary>
-		public bool Shoot(int x, int y)
-		{
-			var point = new ReadOnlyPoint(x, y);
-			ShotsTaken.Add(point);
-			return OccupiedPoints.Contains(point);
-		}
-
-		public PointState GetPointState(int x, int y)
-		{
-			var point = new ReadOnlyPoint(x, y);
-			if (!ShotsTaken.Contains(point)) return PointState.Unknown;
-			else if (OccupiedPoints.Contains(point)) return PointState.Hit;
-			else return PointState.Miss;
-		}
-
-		public override string ToString() => ToString(false);
-		public string ToString(bool reveal)
-		{
-			StringBuilder sb = new();
-			for (int y = 0; y < Rules.BoardHeight; y++)
-			{
-				for (int x = 0; x < Rules.BoardWidth; x++)
+				var state = GetPointState(x, y);
+				char outputChar = state switch
 				{
-					var state = GetPointState(x, y);
-					char outputChar = state switch
-					{
-						PointState.Unknown => '~',
-						PointState.Hit => 'H',
-						PointState.Miss => ' ',
-						_ => throw new NotImplementedException(),
-					};
-					sb.Append(outputChar);
-				}
-				sb.AppendLine("|");
+					PointState.Unknown => '~',
+					PointState.Hit => 'H',
+					PointState.Miss => ' ',
+					_ => throw new NotImplementedException(),
+				};
+				var occupied = OccupiedPoints.Contains(new(x, y));
+				if (reveal && occupied && state is PointState.Unknown) outputChar = 'O';
+				sb.Append(outputChar);
 			}
-			return sb.ToString();
+			sb.AppendLine("|");
 		}
+		return sb.ToString();
 	}
 }

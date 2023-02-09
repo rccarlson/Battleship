@@ -23,6 +23,11 @@ namespace Battleship
 				BoardHeight: 10
 				);
 		}
+		public override int GetHashCode()
+		{
+			var shipHashes = string.Join("|", Ships.Select(ship => $"{ship.ShipName}|{ship.Length}"));
+			return $"{BoardWidth}|{BoardHeight}|{shipHashes}".GetHashCode();
+		}
 
 		public static RuleSet Standard { get; }
 	}
