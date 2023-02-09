@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -28,19 +29,19 @@ public class Board
 		OccupiedPoints = Ships.SelectMany(ship => ship.Placement.OccupiedSpaces).ToHashSet();
 	}
 
-	private static Dictionary<string, BoardPlacement[]> BoardPlacementHash = new();
+	private static ConcurrentDictionary<string, BoardPlacement[]> BoardPlacementCache = new();
 	private static IEnumerable<BoardPlacement> GetAllPossiblePlacements(int length, RuleSet rules, IEnumerable<Ship> ships)
 	{
 		length -= 1;
 		var inputHash = $"{length}|{rules.GetHashCode()}";
-		if (!BoardPlacementHash.TryGetValue(inputHash, out BoardPlacement[]? placement))
+		if (!BoardPlacementCache.TryGetValue(inputHash, out BoardPlacement[]? placement))
 		{
 			var verticalPositions = GeneratePoints(0, rules.BoardWidth, 0, rules.BoardHeight - length)
 				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X, start.Y + length)));
 			var horizontalPositions = GeneratePoints(0, rules.BoardWidth - length, 0, rules.BoardHeight)
 				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X + length, start.Y)));
 			placement = verticalPositions.Concat(horizontalPositions).ToArray();
-			BoardPlacementHash[inputHash] = placement;
+			BoardPlacementCache[inputHash] = placement;
 		}
 
 		return placement.Where(PlacementIsValid);
