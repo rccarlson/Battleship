@@ -10,28 +10,37 @@ namespace Battleship
 	{
 		public BoardPlacement(ReadOnlyPoint start, ReadOnlyPoint end) {
 			if (start.X != end.X && start.Y != end.Y) throw new ArgumentException($"Cannot place piece diagonally between {start} and {end}");
-			Start = start;
-			End = end;
-			
-			// TODO: this is jank. Make it not jank
-			var minx = Math.Min(start.X, end.X);
-			var maxx = Math.Max(start.X, end.X);
-			var miny = Math.Min(start.Y, end.Y);
-			var maxy = Math.Max(start.Y, end.Y);
-			var length = (maxx - minx) + (maxy - miny); // works iff diagonals not allowed
-			var spaces = new List<ReadOnlyPoint>(length);
-			for(int x = minx; x <= maxx; x++)
+
+			if (start.X != end.X)
 			{
-				for(int y = miny; y <= maxy; y++)
-				{
-					spaces.Add(new ReadOnlyPoint(x, y));
-				}
+				// horizontal
+				OccupiedSpaces = RangeAscending(start.X, end.X).Select(x => new ReadOnlyPoint(x, start.Y)).ToArray();
 			}
-			OccupiedSpaces = spaces.ToArray();
+			else if (start.Y != end.Y)
+			{
+				// vertical
+				OccupiedSpaces = RangeAscending(start.Y, end.Y).Select(y=> new ReadOnlyPoint(start.X, y)).ToArray();
+			}
+			else throw new ArgumentException("Cannot have diagonal piece");
+
+			static IEnumerable<int> RangeAscending(int a, int b)
+			{
+				int min, length;
+				if(a < b)
+				{
+					min = a;
+					length = b - a;
+				}
+				else
+				{
+					min = b;
+					length = a - b;
+				}
+				return Enumerable.Range(min, length + 1);
+			}
 		}
-		public readonly ReadOnlyPoint Start, End;
 		public readonly ReadOnlyPoint[] OccupiedSpaces;
-		public override string ToString() => $"{Start} -> {End}";
+		public override string ToString() => $"{OccupiedSpaces.First()} -> {OccupiedSpaces.Last()}";
 	}
 
 	public readonly record struct Ship(string ShipName, BoardPlacement Placement);
