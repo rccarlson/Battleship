@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BattleshipNeuralNet" GeneratedClassName="NetSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LogCSVPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">\\usgtd-4pshxp3\c$\Users\carlril\Documents\Battleship\results.csv</Value>
+    </Setting>
+    <Setting Name="NetworkSavePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">\\usgtd-4pshxp3\c$\Users\carlril\Documents\Battleship\networks.dat</Value>
+    </Setting>
+    <Setting Name="TargetPoolSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="NetworkAttempts" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="MutationRate" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.05</Value>
+    </Setting>
+    <Setting Name="MutationEpsilon" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.05</Value>
+    </Setting>
+    <Setting Name="SurvivalRate" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.5</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
