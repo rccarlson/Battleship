@@ -51,7 +51,7 @@ public class GeneticNeuralNet
 	internal static double Sigmoid(float z) => 1.0f / (1.0f + (float)Math.Exp(-z));
 	internal static Matrix<double> Sigmoid(Matrix<double> matrix)
 		=> MatrixPerPoint(matrix, Sigmoid);
-	internal static Matrix<double> MatrixPerPoint(Matrix<double> matrix, Func<double, double> func)
+	internal static Matrix<T> MatrixPerPoint<T>(Matrix<T> matrix, Func<T, T> func) where T : struct, IEquatable<T>, IFormattable
 	{
 		var newMatrix = matrix.Clone();
 		for (int i = 0; i < matrix.ColumnCount; i++)
