@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Battleship
 {
-	public record RuleSet((string ShipName, int Length)[] Ships, int BoardWidth, int BoardHeight)
+	public readonly record struct RuleSet((string ShipName, int Length)[] Ships, int BoardWidth, int BoardHeight)
 	{
 		static RuleSet()
 		{
