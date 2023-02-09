@@ -53,7 +53,7 @@ internal class Program
 		}
 	}
 
-	private struct NetAndScore
+	private readonly struct NetAndScore
 	{
 		public NetAndScore(GeneticNeuralNet net)
 		{
