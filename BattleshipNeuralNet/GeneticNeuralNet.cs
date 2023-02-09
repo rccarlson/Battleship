@@ -53,7 +53,7 @@ public class GeneticNeuralNet
 		=> MatrixPerPoint(matrix, Sigmoid);
 	internal static Matrix<T> MatrixPerPoint<T>(Matrix<T> matrix, Func<T, T> func) where T : struct, IEquatable<T>, IFormattable
 	{
-		var newMatrix = matrix.Clone();
+		var newMatrix = Matrix<T>.Build.SameAs(matrix);
 		for (int i = 0; i < matrix.ColumnCount; i++)
 			for (int j = 0; j < matrix.RowCount; j++)
 			{
