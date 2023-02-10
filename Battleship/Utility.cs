@@ -29,6 +29,12 @@ internal static class Utility
 		return list;
 	}
 
+	public static T ChooseRandom<T>(this IList<T> list)
+	{
+		var index = Random.Next(0, list.Count);
+		return list[index];
+	}
+
 	public static TimeSpan Profile(Action action)
 	{
 		var sw = Stopwatch.StartNew();
