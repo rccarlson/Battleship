@@ -29,25 +29,25 @@ public class Board
 		OccupiedPoints = Ships.SelectMany(ship => ship.Placement.OccupiedSpaces).ToHashSet();
 	}
 
-	private static ConcurrentDictionary<string, BoardPlacement[]> BoardPlacementCache = new();
+	private static ConcurrentDictionary<int, BoardPlacement[]> BoardPlacementCache = new();
 	private static IEnumerable<BoardPlacement> GetAllPossiblePlacements(int length, RuleSet rules, IEnumerable<Ship> ships)
 	{
 		length -= 1;
-		var inputHash = $"{length}|{rules.GetHashCode()}";
-		if (!BoardPlacementCache.TryGetValue(inputHash, out BoardPlacement[]? placement))
+		BoardPlacement[]? placement;
+		var hash = HashCode.Combine(length, rules);
+		if (!BoardPlacementCache.TryGetValue(hash, out placement))
 		{
-			var verticalPositions = GeneratePoints(0, rules.BoardWidth, 0, rules.BoardHeight - length)
+			var maxVert = rules.BoardHeight - length;
+			var maxHoriz = rules.BoardWidth - length;
+			var verticalPositions = rules.AllBoardPoints.Where(point => point.Y < maxVert)
 				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X, start.Y + length)));
-			var horizontalPositions = GeneratePoints(0, rules.BoardWidth - length, 0, rules.BoardHeight)
+			var horizontalPositions = rules.AllBoardPoints.Where(point => point.X < maxHoriz)
 				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X + length, start.Y)));
 			placement = verticalPositions.Concat(horizontalPositions).ToArray();
-			BoardPlacementCache[inputHash] = placement;
+			BoardPlacementCache[hash] = placement;
 		}
 
 		return placement.Where(PlacementIsValid);
-
-		IEnumerable<ReadOnlyPoint> GeneratePoints(int xmin, int xmax, int ymin, int ymax)
-			=> Enumerable.Range(xmin, xmax).SelectMany(x => Enumerable.Range(ymin, ymax).Select(y => new ReadOnlyPoint(x, y)));
 
 		bool PlacementIsValid(BoardPlacement placement)
 		{
