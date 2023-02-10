@@ -35,9 +35,9 @@ internal class Program
 				board.Shoot(x, y);
 				if(printProgress)
 				{
-				Console.Clear();
-				Console.WriteLine(board.ToString());
-				Console.WriteLine(board.IsWon ? "Game won" : "");
+					Console.Clear();
+					Console.WriteLine(board.ToString());
+					Console.WriteLine(board.IsWon ? "Game won" : "");
 					Thread.Sleep(100);
 				}
 			}
