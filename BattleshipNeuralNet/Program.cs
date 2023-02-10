@@ -82,15 +82,8 @@ internal class Program
 		var board = new Board(ruleSet);
 		while (!board.IsWon)
 		{
-			List<(int x, int y)> rowMajorPoints = new(ruleSet.BoardHeight * ruleSet.BoardHeight);
-			for (int y = 0; y < ruleSet.BoardHeight; y++)
-			{
-				for (int x = 0; x < ruleSet.BoardWidth; x++)
-				{
-					rowMajorPoints.Add((x, y));
-				}
-			}
-			var inputs = new List<double>(rowMajorPoints.Count * 3);
+			var rowMajorPoints = ruleSet.AllBoardPoints;
+			var inputs = new List<double>(rowMajorPoints.Length * 3);
 			foreach (var (x, y) in rowMajorPoints)
 			{
 				var state = board.GetPointState(x, y);
