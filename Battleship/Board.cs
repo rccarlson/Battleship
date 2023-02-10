@@ -34,7 +34,6 @@ public class Board
 	private static ConcurrentDictionary<int, BoardPlacement[]> BoardPlacementCache = new();
 	private static IEnumerable<BoardPlacement> GetAllPossiblePlacements(int length, RuleSet rules, IEnumerable<Ship> ships)
 	{
-		length -= 1;
 		BoardPlacement[]? placement;
 		var hash = HashCode.Combine(length, rules);
 		if (!BoardPlacementCache.TryGetValue(hash, out placement))
@@ -42,11 +41,10 @@ public class Board
 			var maxVert = rules.BoardHeight - length;
 			var maxHoriz = rules.BoardWidth - length;
 			var verticalPositions = rules.AllBoardPoints.Where(point => point.Y < maxVert)
-				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X, start.Y + length)));
+				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X, start.Y + length - 1)));
 			var horizontalPositions = rules.AllBoardPoints.Where(point => point.X < maxHoriz)
-				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X + length, start.Y)));
-			placement = verticalPositions.Concat(horizontalPositions).ToArray();
-			BoardPlacementCache[hash] = placement;
+				.Select(start => new BoardPlacement(start, new ReadOnlyPoint(start.X + length - 1, start.Y)));
+			BoardPlacementCache[hash] = placement = verticalPositions.Concat(horizontalPositions).ToArray();
 		}
 
 		return placement.Where(PlacementIsValid);

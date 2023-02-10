@@ -29,7 +29,7 @@ namespace Battleship
 		}
 
 		public int Length => Math.Abs(End.X - Start.X) + Math.Abs(End.Y - Start.Y) + 1;
-		private ReadOnlyPoint Start, End;
+		private readonly ReadOnlyPoint Start, End;
 		private ReadOnlyPoint[]? _occupiedSpaces = null;
 		public ReadOnlyPoint[] OccupiedSpaces
 		{
