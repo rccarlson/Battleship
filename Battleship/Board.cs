@@ -23,8 +23,10 @@ public class Board
 		Ships = new List<Ship>(rules.Ships.Length);
 		foreach (var (shipName, length) in rules.Ships)
 		{
-			var placement = GetAllPossiblePlacements(length, rules, Ships).ToArray().Shuffle().First();
-			Ships.Add(new Ship(shipName, placement));
+			var allPlacements = GetAllPossiblePlacements(length, rules, Ships).ToArray();
+			var placement = allPlacements.ChooseRandom();
+			var newShip = new Ship(shipName, placement);
+			Ships.Add(newShip);
 		}
 		OccupiedPoints = Ships.SelectMany(ship => ship.Placement.OccupiedSpaces).ToHashSet();
 	}
