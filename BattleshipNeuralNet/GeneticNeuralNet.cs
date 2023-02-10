@@ -64,7 +64,12 @@ public class GeneticNeuralNet
 
 	public double Score(Func<GeneticNeuralNet, double> scoreFunc, int sampleSize)
 	{
-		return Enumerable.Range(0, sampleSize).Average(_ => scoreFunc(this));
+		double total = 0.0;
+		for(int i = 0; i < sampleSize; i++)
+		{
+			total += scoreFunc(this);
+		}
+		return total / sampleSize;
 	}
 
 	public void Mutate(double epsilon, double mutationRate)
