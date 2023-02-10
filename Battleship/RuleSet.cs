@@ -6,8 +6,24 @@ using System.Threading.Tasks;
 
 namespace Battleship
 {
-	public readonly record struct RuleSet((string ShipName, int Length)[] Ships, int BoardWidth, int BoardHeight)
+	public readonly struct RuleSet
 	{
+		public RuleSet((string ShipName, int Length)[] Ships, int BoardWidth, int BoardHeight)
+		{
+			this.Ships = Ships;
+			this.BoardWidth = BoardWidth;
+			this.BoardHeight = BoardHeight;
+			AllBoardCoordinates = new (int, int)[BoardWidth * BoardHeight];
+			AllBoardPoints = new ReadOnlyPoint[BoardWidth * BoardHeight];
+			for(int y = 0; y < BoardHeight; y++)
+			{
+				for(int x = 0; x < BoardWidth; x++)
+				{
+					AllBoardCoordinates[y * BoardWidth + x] = (x, y);
+					AllBoardPoints[y * BoardWidth + x] = new(x, y);
+				}
+			}
+		}
 		static RuleSet()
 		{
 			Standard = new(
@@ -25,10 +41,15 @@ namespace Battleship
 		}
 		public override int GetHashCode()
 		{
-			var shipHashes = string.Join("|", Ships.Select(ship => $"{ship.ShipName}|{ship.Length}"));
-			return $"{BoardWidth}|{BoardHeight}|{shipHashes}".GetHashCode();
+			var shipStrings = string.Join("|", Ships.Select(ship => HashCode.Combine(ship.ShipName, ship.Length)));
+			return HashCode.Combine(BoardWidth, BoardHeight, shipStrings);
 		}
 
 		public static RuleSet Standard { get; }
+
+		public readonly (string ShipName, int Length)[] Ships;
+		public readonly int BoardWidth, BoardHeight;
+		public readonly (int X, int Y)[] AllBoardCoordinates;
+		public readonly ReadOnlyPoint[] AllBoardPoints;
 	}
 }
