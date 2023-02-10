@@ -19,9 +19,9 @@ namespace Battleship
 		{
 			int min, length;
 			if (a < b)
-				(min, length) = (a, b - a);
+				(min, length) = (a, b - a + 1);
 			else
-				(min, length) = (b, a - b);
+				(min, length) = (b, a - b + 1);
 			var result = new int[length];
 			for(int i = 0; i < length; i++)
 				result[i] = i + min;
