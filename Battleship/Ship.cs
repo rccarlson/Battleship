@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,11 +39,16 @@ namespace Battleship
 				}
 				return Enumerable.Range(min, length + 1);
 			}
+
+		public int Length => Math.Abs(End.X - Start.X) + Math.Abs(End.Y - Start.Y) + 1;
 		}
 		public readonly ReadOnlyPoint[] OccupiedSpaces;
 		public override string ToString() => $"{OccupiedSpaces.First()} -> {OccupiedSpaces.Last()}";
 	}
 
-	public readonly record struct Ship(string ShipName, BoardPlacement Placement);
+	public readonly record struct Ship(string ShipName, BoardPlacement Placement)
+	{
+		public int Length => Placement.Length;
+	}
 
 }
