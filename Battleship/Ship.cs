@@ -10,26 +10,23 @@ namespace Battleship
 	public struct BoardPlacement
 	{
 		public BoardPlacement(ReadOnlyPoint start, ReadOnlyPoint end)
-			{
+		{
 			if (start.X != end.X && start.Y != end.Y) throw new ArgumentException($"Cannot place piece diagonally between {start} and {end}");
 			Start = start;
 			End = end;
-			}
-		private static IEnumerable<int> RangeAscending(int a, int b)
-			{
-				int min, length;
-				if(a < b)
-				{
-					min = a;
-					length = b - a;
-				}
-				else
-				{
-					min = b;
-					length = a - b;
-				}
-				return Enumerable.Range(min, length + 1);
-			}
+		}
+		private static int[] RangeAscending(int a, int b)
+		{
+			int min, length;
+			if (a < b)
+				(min, length) = (a, b - a);
+			else
+				(min, length) = (b, a - b);
+			var result = new int[length];
+			for(int i = 0; i < length; i++)
+				result[i] = i + min;
+			return result;
+		}
 
 		public int Length => Math.Abs(End.X - Start.X) + Math.Abs(End.Y - Start.Y) + 1;
 		private ReadOnlyPoint Start, End;
