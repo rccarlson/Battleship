@@ -13,10 +13,11 @@ internal class Program
 		var settings = NetSettings.Default;
 		var state = Load(settings.NetworkSavePath);
 		// initial setup
-		for (int i = state.Networks.Count; i < settings.TargetPoolSize; i++)
+		state.Networks.Capacity = settings.TargetPoolSize;
+		Parallel.For(state.Networks.Count, settings.TargetPoolSize, _ =>
 		{
 			state.Networks.Add(BuildNetwork(rules));
-		}
+		});
 		while (true)
 		{
 			var stopwatch = Stopwatch.StartNew();
