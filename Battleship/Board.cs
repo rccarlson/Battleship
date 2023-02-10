@@ -90,6 +90,10 @@ public class Board
 			throw new InvalidOperationException($"Expected ships of size {string.Join(", ", expectedLengths)} " +
 				$"but produced ships with sizes {string.Join(", ", actualLengths)}");
 
+		var totalOccupiedSpaces = OccupiedPoints.Count;
+		if (totalOccupiedSpaces != totalActualPoints)
+			throw new InvalidOperationException($"Mismatch between reported lengths and occupied spaces");
+
 		foreach(var ship in Ships)
 		{
 			if (ship.Placement.OccupiedSpaces.Any(point => !PointIsValid(point)))
