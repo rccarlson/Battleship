@@ -9,22 +9,13 @@ namespace Battleship
 {
 	public struct BoardPlacement
 	{
-		public BoardPlacement(ReadOnlyPoint start, ReadOnlyPoint end) {
+		public BoardPlacement(ReadOnlyPoint start, ReadOnlyPoint end)
+			{
 			if (start.X != end.X && start.Y != end.Y) throw new ArgumentException($"Cannot place piece diagonally between {start} and {end}");
-
-			if (start.X != end.X)
-			{
-				// horizontal
-				OccupiedSpaces = RangeAscending(start.X, end.X).Select(x => new ReadOnlyPoint(x, start.Y)).ToArray();
+			Start = start;
+			End = end;
 			}
-			else if (start.Y != end.Y)
-			{
-				// vertical
-				OccupiedSpaces = RangeAscending(start.Y, end.Y).Select(y=> new ReadOnlyPoint(start.X, y)).ToArray();
-			}
-			else throw new ArgumentException("Cannot have diagonal piece");
-
-			static IEnumerable<int> RangeAscending(int a, int b)
+		private static IEnumerable<int> RangeAscending(int a, int b)
 			{
 				int min, length;
 				if(a < b)
@@ -41,8 +32,30 @@ namespace Battleship
 			}
 
 		public int Length => Math.Abs(End.X - Start.X) + Math.Abs(End.Y - Start.Y) + 1;
+		private ReadOnlyPoint Start, End;
+		private ReadOnlyPoint[]? _occupiedSpaces = null;
+		public ReadOnlyPoint[] OccupiedSpaces
+		{
+			get
+			{
+				if (_occupiedSpaces is null)
+				{
+					var start = Start;
+					if (Start.X != End.X)
+					{
+						// horizontal
+						_occupiedSpaces = RangeAscending(Start.X, End.X).Select(x => new ReadOnlyPoint(x, start.Y)).ToArray();
+					}
+					else if (Start.Y != End.Y)
+					{
+						// vertical
+						_occupiedSpaces = RangeAscending(Start.Y, End.Y).Select(y => new ReadOnlyPoint(start.X, y)).ToArray();
+					}
+					else throw new ArgumentException("Cannot have diagonal piece");
+				}
+				return _occupiedSpaces ?? Array.Empty<ReadOnlyPoint>();
+			}
 		}
-		public readonly ReadOnlyPoint[] OccupiedSpaces;
 		public override string ToString() => $"{OccupiedSpaces.First()} -> {OccupiedSpaces.Last()}";
 	}
 
