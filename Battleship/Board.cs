@@ -80,6 +80,30 @@ public class Board
 		else return PointState.Miss;
 	}
 
+	public void Validate()
+	{
+		var expectedLengths = Rules.Ships.Select(s => s.Length).OrderBy(s => s).ToArray();
+		var actualLengths = Ships.Select(s => s.Length).OrderBy(s => s).ToArray();
+		var totalExpectedPoints = expectedLengths.Sum();
+		var totalActualPoints = actualLengths.Sum();
+		if (totalExpectedPoints != totalActualPoints)
+			throw new InvalidOperationException($"Expected ships of size {string.Join(", ", expectedLengths)} " +
+				$"but produced ships with sizes {string.Join(", ", actualLengths)}");
+
+		foreach(var ship in Ships)
+		{
+			if (ship.Placement.OccupiedSpaces.Any(point => !PointIsValid(point)))
+				throw new InvalidOperationException($"A point in placement {ship.Placement} was out of bounds");
+		}
+		bool PointIsValid(ReadOnlyPoint point)
+		{
+			if(point.X < 0 || point.Y < 0) return false;
+			if(point.X >= Rules.BoardWidth) return false;
+			if(point.Y >= Rules.BoardHeight) return false;
+			return true;
+		}
+	}
+
 	public override string ToString() => ToString(false);
 	public string ToString(bool reveal)
 	{
