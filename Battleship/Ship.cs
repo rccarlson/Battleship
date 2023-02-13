@@ -15,16 +15,16 @@ namespace Battleship
 			Start = start;
 			End = end;
 		}
-		private static int[] RangeAscending(int a, int b)
+		private static T[] RangeAscending<T>(int a, int b, Func<int, T> selector)
 		{
 			int min, length;
 			if (a < b)
 				(min, length) = (a, b - a + 1);
 			else
 				(min, length) = (b, a - b + 1);
-			var result = new int[length];
-			for(int i = 0; i < length; i++)
-				result[i] = i + min;
+			var result = new T[length];
+			for (int i = 0; i < length; i++)
+				result[i] = selector(i + min);
 			return result;
 		}
 
@@ -41,12 +41,12 @@ namespace Battleship
 					if (Start.X != End.X)
 					{
 						// horizontal
-						_occupiedSpaces = RangeAscending(Start.X, End.X).Select(x => new ReadOnlyPoint(x, start.Y)).ToArray();
+						_occupiedSpaces = RangeAscending(Start.X, End.X, x => new ReadOnlyPoint(x, start.Y));
 					}
 					else if (Start.Y != End.Y)
 					{
 						// vertical
-						_occupiedSpaces = RangeAscending(Start.Y, End.Y).Select(y => new ReadOnlyPoint(start.X, y)).ToArray();
+						_occupiedSpaces = RangeAscending(Start.Y, End.Y, y => new ReadOnlyPoint(start.X, y));
 					}
 					else throw new ArgumentException("Cannot have diagonal piece");
 				}
