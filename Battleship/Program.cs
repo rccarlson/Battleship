@@ -38,6 +38,14 @@ internal class Program
 				{
 					Console.Clear();
 					Console.WriteLine(board.ToString());
+					foreach(var ship in board.Ships)
+					{
+						var name = ship.ShipName;
+						var sunk = ship.Placement.OccupiedSpaces.All(board.ShotsTaken.Contains);
+						var hits = ship.Placement.OccupiedSpaces.Count(board.ShotsTaken.Contains);
+						var status = sunk ? "Sunk" : $"{hits}/{ship.Length}";
+						Console.WriteLine($"{name.PadRight(15)} {status}");
+					}
 					Console.WriteLine(board.IsWon ? "Game won" : "");
 					Thread.Sleep(50);
 				}
