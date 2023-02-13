@@ -54,7 +54,7 @@ public class Board
 			if (ships is null) return true;
 			var allOccupied = ships.SelectMany(ship => ship.Placement.OccupiedSpaces); // spaces currently occupied by a ship
 			var allProposed = placement.OccupiedSpaces; // spaces that would be taken if this point is approved
-			var conflict = allProposed.Any(proposed => allOccupied.Contains(proposed));
+			var conflict = allProposed.Intersect(allOccupied).Any();
 			return !conflict;
 		}
 	}
