@@ -23,7 +23,7 @@ public class Board
 		Ships = new List<Ship>(rules.Ships.Length);
 		foreach (var (shipName, length) in rules.Ships)
 		{
-			var allPlacements = GetAllPossiblePlacements(length, rules, Ships).ToArray();
+			var allPlacements = GetAllPossiblePlacements(length, rules, Ships);
 			var placement = allPlacements.ChooseRandom();
 			var newShip = new Ship(shipName, placement);
 			Ships.Add(newShip);
@@ -32,7 +32,7 @@ public class Board
 	}
 
 	private static ConcurrentDictionary<int, BoardPlacement[]> BoardPlacementCache = new();
-	private static IEnumerable<BoardPlacement> GetAllPossiblePlacements(int length, RuleSet rules, IEnumerable<Ship> ships)
+	private static BoardPlacement[] GetAllPossiblePlacements(int length, RuleSet rules, IEnumerable<Ship> ships)
 	{
 		BoardPlacement[]? placement;
 		var hash = HashCode.Combine(length, rules);
@@ -47,7 +47,7 @@ public class Board
 			BoardPlacementCache[hash] = placement = verticalPositions.Concat(horizontalPositions).ToArray();
 		}
 
-		return placement.Where(PlacementIsValid);
+		return placement.Where(PlacementIsValid).ToArray();
 
 		bool PlacementIsValid(BoardPlacement placement)
 		{
