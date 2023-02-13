@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 namespace Battleship
 {
 	public enum Orientation { Horizontal, Vertical }
+	/// <summary>
+	/// Describes a set of points that a <see cref="Ship"/> occupies.
+	/// A set of these points is created during the first game, and never again.
+	/// </summary>
 	public struct BoardPlacement
 	{
 		public BoardPlacement(ReadOnlyPoint start, ReadOnlyPoint end)
