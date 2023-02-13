@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Battleship
 {
+	public enum Orientation { Horizontal, Vertical }
 	public struct BoardPlacement
 	{
 		public BoardPlacement(ReadOnlyPoint start, ReadOnlyPoint end)
@@ -14,6 +15,9 @@ namespace Battleship
 			if (start.X != end.X && start.Y != end.Y) throw new ArgumentException($"Cannot place piece diagonally between {start} and {end}");
 			Start = start;
 			End = end;
+			if (start.X == end.X) Orientation = Orientation.Horizontal;
+			else if (start.Y == end.Y) Orientation = Orientation.Vertical;
+			else throw new ArgumentException("Board placement cannot be diagonal"); // probably unnecessary
 		}
 		private static T[] RangeAscending<T>(int a, int b, Func<int, T> selector)
 		{
@@ -28,6 +32,7 @@ namespace Battleship
 			return result;
 		}
 
+		public Orientation Orientation { get; }
 		public int Length => Math.Abs(End.X - Start.X) + Math.Abs(End.Y - Start.Y) + 1;
 		private readonly ReadOnlyPoint Start, End;
 		private ReadOnlyPoint[]? _occupiedSpaces = null;
