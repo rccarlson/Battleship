@@ -29,6 +29,7 @@ public class Board
 			Ships.Add(newShip);
 		}
 		OccupiedPoints = Ships.SelectMany(ship => ship.Placement.OccupiedSpaces).ToHashSet();
+		ShotsTaken = new(rules.BoardWidth * rules.BoardHeight);
 	}
 
 	private static ConcurrentDictionary<int, BoardPlacement[]> BoardPlacementCache = new();
@@ -64,7 +65,7 @@ public class Board
 	public readonly RuleSet Rules;
 	public readonly List<Ship> Ships;
 	private readonly HashSet<ReadOnlyPoint> OccupiedPoints;
-	public readonly List<ReadOnlyPoint> ShotsTaken = new();
+	public readonly List<ReadOnlyPoint> ShotsTaken;
 
 	public bool IsWon => !OccupiedPoints.Except(ShotsTaken).Any();
 
