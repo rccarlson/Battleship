@@ -17,10 +17,14 @@ public struct BoardPlacement
 	public BoardPlacement(ReadOnlyPoint start, ReadOnlyPoint end)
 	{
 		if (start.X != end.X && start.Y != end.Y) throw new ArgumentException($"Cannot place piece diagonally between {start} and {end}");
-		Start = start;
-		End = end;
-		if (start.X == end.X) Orientation = Orientation.Horizontal;
-		else if (start.Y == end.Y) Orientation = Orientation.Vertical;
+		if (start.X <= end.X && start.Y <= end.Y)
+			(Start, End) = (start, end);
+		else if (start.X >= end.X && start.Y >= end.Y)
+			(Start, End) = (end, start);
+		else
+			throw new ArgumentException("idk whats wrong");
+		if (start.X == end.X) Orientation = Orientation.Vertical;
+		else if (start.Y == end.Y) Orientation = Orientation.Horizontal;
 		else throw new ArgumentException("Board placement cannot be diagonal"); // probably unnecessary
 	}
 	private static T[] RangeAscending<T>(int a, int b, Func<int, T> selector)
