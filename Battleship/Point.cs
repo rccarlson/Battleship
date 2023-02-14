@@ -15,5 +15,11 @@ namespace Battleship
 		public bool Equals(ReadOnlyPoint x, ReadOnlyPoint y) => x.X == y.X && x.Y == y.Y;
 
 		public int GetHashCode([DisallowNull] ReadOnlyPoint obj) => HashCode.Combine(obj.X, obj.Y);
+
+		public static implicit operator ReadOnlyPoint((int, int) tuple)
+		{
+			var (x, y) = tuple;
+			return new ReadOnlyPoint(x, y);
+		}
 	}
 }
