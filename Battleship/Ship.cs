@@ -40,9 +40,66 @@ public struct BoardPlacement
 		return result;
 	}
 
+	public bool ContainsPoint(ReadOnlyPoint point)
+	{
+		return Orientation switch
+		{
+			Orientation.Horizontal => point.Y == Start.Y /* point lies on same row */ && point.X >= Start.X && point.X <= End.X,
+			Orientation.Vertical => point.X == Start.X /* point lies on same column */ && point.Y >= Start.Y && point.Y <= End.Y,
+			_ => throw new NotImplementedException()
+		};
+	}
+	public bool ConflictsWithPlacement(BoardPlacement placement)
+	{
+		var actualAnswer = placement.OccupiedSpaces.Intersect(OccupiedSpaces).Any();
+
+		if(Orientation == Orientation.Horizontal)
+		{
+			if (placement.Orientation == Orientation.Horizontal) {
+				// both horizontal
+				if (placement.Start.Y!= Start.Y) return false; // on different rows
+			}
+			else
+			{
+				// this is horiz other is vert
+				if (!IsBetween(placement.Start.X, MinX, MaxX)) return false; // other is not on same column
+				if (placement.Start.Y == Start.Y) return true;
+			}
+		}
+		else
+		{
+			if(placement.Orientation == Orientation.Horizontal)
+			{
+				// this is vert other is horiz
+				if (!IsBetween(placement.Start.Y, MinY, MaxY)) return false;
+				if (placement.Start.X == Start.X) return true;
+			}
+			else
+			{
+				// both vert
+				if (placement.Start.X != Start.X) return false; // on different columns
+			}
+		}
+
+		return OccupiedSpaces.Any(placement.ContainsPoint);
+
+		static bool IsBetween(int value, int minInclusive, int maxInclusive)
+			=> value >= minInclusive && value <= maxInclusive;
+	}
+
 	public Orientation Orientation { get; }
 	public int Length => Math.Abs(End.X - Start.X) + Math.Abs(End.Y - Start.Y) + 1;
-	private readonly ReadOnlyPoint Start, End;
+	
+	/// <summary> The point with a smaller value </summary>
+	private readonly ReadOnlyPoint Start;
+	/// <summary> The point with a larger value </summary>
+	private readonly ReadOnlyPoint End;
+
+	public int MinX => Start.X;
+	public int MaxX => End.X;
+	public int MinY => Start.Y;
+	public int MaxY => End.Y;
+
 	private ReadOnlyPoint[]? _occupiedSpaces = null;
 	public ReadOnlyPoint[] OccupiedSpaces
 	{

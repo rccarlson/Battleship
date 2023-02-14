@@ -52,10 +52,12 @@ public class Board
 		bool PlacementIsValid(BoardPlacement placement)
 		{
 			if (ships is null) return true;
-			var allOccupied = ships.SelectMany(ship => ship.Placement.OccupiedSpaces); // spaces currently occupied by a ship
-			var allProposed = placement.OccupiedSpaces; // spaces that would be taken if this point is approved
-			var conflict = allProposed.Intersect(allOccupied).Any();
-			return !conflict;
+
+			foreach (var ship in ships)
+			{
+				if (ship.Placement.ConflictsWithPlacement(placement)) return false;
+			}
+			return true;
 		}
 	}
 
