@@ -6,15 +6,19 @@ internal class Program
 {
 	static void Main(string[] args)
 	{
-		SimulateGame(true);
-		for (int i = 0; i < 100; i++) SimulateGame(false).Validate(); // warm caches
+		//SimulateGame(true);
+		for (int i = 0; i < 1_000; i++) SimulateGame(false).Validate(); // warm caches
 
-		for (int i = 0; i < 100; i++) SimulateGame(false); // hook for profiling
+		for (int i = 0; i < 100_000; i++) SimulateGame(false); // hook for profiling
 
+		double total = 0;
+		int count = 0;
 		for (int i = 0; i < 100; i++)
 		{
-			var average = Enumerable.Range(0, 20_000).AsParallel().Average(_ => ProfileMs(() => SimulateGame(false)));
-			Console.WriteLine(average);
+			var average = Enumerable.Range(0, 1_000).AsParallel().Average(_ => ProfileMs(() => SimulateGame(false), 100));
+			total += average;
+			count++;
+			Console.WriteLine(total / count);
 		}
 	}
 
