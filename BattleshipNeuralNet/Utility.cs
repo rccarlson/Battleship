@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BattleshipNeuralNet;
 
-internal static  class Utility
+internal static class Utility
 {
 	internal static readonly Random Random = new();
 	public static IEnumerable<(T, S)> Fold<T, S>(this IEnumerable<T> source, IEnumerable<S> source2)

@@ -32,7 +32,7 @@ public class Board
 	}
 
 	private static ConcurrentDictionary<int, BoardPlacement[]> BoardPlacementCache = new();
-	private static BoardPlacement[] GetAllPossiblePlacements(int length, RuleSet rules, IEnumerable<Ship> ships)
+	internal static BoardPlacement[] GetAllPossiblePlacements(int length, RuleSet rules, IEnumerable<Ship> ships)
 	{
 		BoardPlacement[]? placement;
 		var hash = HashCode.Combine(length, rules);
