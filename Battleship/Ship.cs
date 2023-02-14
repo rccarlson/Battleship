@@ -108,17 +108,17 @@ public struct BoardPlacement
 			if (_occupiedSpaces is null)
 			{
 				var start = Start;
-				if (Start.X != End.X)
+				if (Start.Y == End.Y)
 				{
 					// horizontal
 					_occupiedSpaces = RangeAscending(Start.X, End.X, x => new ReadOnlyPoint(x, start.Y));
 				}
-				else if (Start.Y != End.Y)
+				else if (Start.X == End.X)
 				{
 					// vertical
 					_occupiedSpaces = RangeAscending(Start.Y, End.Y, y => new ReadOnlyPoint(start.X, y));
 				}
-				else throw new ArgumentException("Cannot have diagonal piece");
+				else throw new ArgumentException($"Cannot have diagonal piece ({Start} -> {End})");
 			}
 			return _occupiedSpaces ?? Array.Empty<ReadOnlyPoint>();
 		}
