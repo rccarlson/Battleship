@@ -113,4 +113,18 @@ public class Tests
 			board.Validate();
 		}
 	}
+
+	[TestCase(0,0,1,0, ExpectedResult = true)]
+	[TestCase(0,0,10,0, ExpectedResult = true)]
+	[TestCase(0,0,0,1, ExpectedResult = false)]
+	[TestCase(0,0,0,10, ExpectedResult = false)]
+	[TestCase(1,5,1,10, ExpectedResult = false)]
+	[TestCase(1,5,10,5, ExpectedResult = true)]
+	public bool BoardPlacementIsHorizontal(int startx, int starty, int endx, int endy)
+	{
+		var start = new ReadOnlyPoint(startx, starty);
+		var end = new ReadOnlyPoint(endx, endy);
+		var position = new BoardPlacement(start, end);
+		return position.Orientation is Orientation.Horizontal;
+	}
 }
