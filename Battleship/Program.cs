@@ -26,7 +26,7 @@ internal class Program
 	{
 		var sw = Stopwatch.StartNew();
 		for (int i = 0; i < iterations; i++)
-		action();
+			action();
 		return sw.Elapsed.TotalMilliseconds / iterations;
 	}
 	static Board SimulateGame(bool printProgress)
@@ -37,11 +37,11 @@ internal class Program
 			for (int x = 0; x < board.Rules.BoardWidth; x++)
 			{
 				board.Shoot(x, y);
-				if(printProgress)
+				if (printProgress)
 				{
 					Console.Clear();
 					Console.WriteLine(board.ToString());
-					foreach(var ship in board.Ships)
+					foreach (var ship in board.Ships)
 					{
 						var name = ship.ShipName;
 						var sunk = ship.Placement.OccupiedSpaces.All(board.ShotsTaken.Contains);
