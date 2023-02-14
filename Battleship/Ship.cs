@@ -51,19 +51,21 @@ public struct BoardPlacement
 	}
 	public bool ConflictsWithPlacement(BoardPlacement placement)
 	{
-		var actualAnswer = placement.OccupiedSpaces.Intersect(OccupiedSpaces).Any();
-
-		if(Orientation == Orientation.Horizontal)
+		if (Orientation == Orientation.Horizontal)
 		{
 			if (placement.Orientation == Orientation.Horizontal) {
 				// both horizontal
 				if (placement.Start.Y!= Start.Y) return false; // on different rows
+				if (IsBetween(placement.Start.X, Start.X, End.X)) return true;
+				if (IsBetween(placement.End.X, Start.X, End.X)) return true;
 			}
 			else
 			{
 				// this is horiz other is vert
 				if (!IsBetween(placement.Start.X, MinX, MaxX)) return false; // other is not on same column
 				if (placement.Start.Y == Start.Y) return true;
+				if (placement.Start.Y > Start.Y) return false;
+				if (placement.End.Y < End.Y) return false;
 			}
 		}
 		else
@@ -73,15 +75,19 @@ public struct BoardPlacement
 				// this is vert other is horiz
 				if (!IsBetween(placement.Start.Y, MinY, MaxY)) return false;
 				if (placement.Start.X == Start.X) return true;
+				if (placement.Start.X > Start.X) return false;
+				if (placement.End.X < End.X) return false;
 			}
 			else
 			{
 				// both vert
 				if (placement.Start.X != Start.X) return false; // on different columns
+				if (IsBetween(placement.Start.Y, Start.Y, End.Y)) return true;
+				if (IsBetween(placement.End.Y, Start.Y, End.Y)) return true;
 			}
 		}
 
-		return OccupiedSpaces.Any(placement.ContainsPoint);
+		return placement.OccupiedSpaces.Intersect(OccupiedSpaces).Any();
 
 		static bool IsBetween(int value, int minInclusive, int maxInclusive)
 			=> value >= minInclusive && value <= maxInclusive;
