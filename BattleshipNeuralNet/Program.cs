@@ -96,8 +96,8 @@ internal class Program
 			var scoreAndPoints = networkOutput.Fold(rowMajorPoints);
 			var target = scoreAndPoints
 				.OrderByDescending(tuple => tuple.Item1)
-				.First(tuple => !board.ShotsTaken.Any(shot => shot.X == tuple.Item2.x && shot.Y == tuple.Item2.y));
-			board.Shoot(target.Item2.x, target.Item2.y);
+				.First(tuple => !board.ShotsTaken.Any(shot => shot.X == tuple.Item2.X && shot.Y == tuple.Item2.Y));
+			board.Shoot(target.Item2.X, target.Item2.X);
 		}
 		return board;
 	}
