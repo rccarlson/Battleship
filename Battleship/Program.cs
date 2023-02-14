@@ -18,14 +18,13 @@ internal class Program
 		}
 	}
 
-	static double ProfileMs(Action action)
+	static double ProfileMs(Action action, int iterations = 1)
 	{
 		var sw = Stopwatch.StartNew();
+		for (int i = 0; i < iterations; i++)
 		action();
-		sw.Stop();
-		return sw.Elapsed.TotalMilliseconds;
+		return sw.Elapsed.TotalMilliseconds / iterations;
 	}
-
 	static Board SimulateGame(bool printProgress)
 	{
 		var board = new Board(RuleSet.Standard);
